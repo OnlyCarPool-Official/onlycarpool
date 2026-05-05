@@ -17,10 +17,15 @@ export const AppProvider = ({ children }) => {
       else setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
-      if (session) fetchProfile(session.user.id);
-      else {
+      // Only re-fetch profile on actual login events, NOT on TOKEN_REFRESHED
+      // TOKEN_REFRESHED fires every time the user switches browser tabs, which
+      // would incorrectly reset isDriver state before the DB update completes
+      if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+        if (session) fetchProfile(session.user.id);
+        else { setProfile(null); setLoading(false); }
+      } else if (event === 'SIGNED_OUT') {
         setProfile(null);
         setLoading(false);
       }

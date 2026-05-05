@@ -195,7 +195,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               { icon: Zap, title: 'Real-Time Matching', desc: 'Ride requests and acceptances are reflected instantly across all devices using Supabase real-time.' },
               { icon: Users, title: 'Multi-Ride Support', desc: 'Drivers can host multiple routes. Passengers can be on multiple rides. Full parallel operation.' },
               { icon: MapPin, title: 'GPS Intercept', desc: 'Snap-Trip uses device GPS to provide proximity-aware ride matching for spontaneous one-off trips.' },
-              { icon: Star, title: 'Elite Driver Perks', desc: 'Snap-Trip pilots receive premium benefits including complimentary valet access at partner hubs.' },
+              { icon: Star, title: 'Zero Commission', desc: 'No platform cuts, no surge pricing. Drivers and passengers connect directly and settle fares on their own terms.' },
             ].map((item) => {
               const Icon = item.icon;
               return (
