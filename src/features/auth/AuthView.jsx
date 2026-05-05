@@ -89,13 +89,21 @@ const AuthView = ({ initialMode = 'login', onBack }) => {
                 />
               </div>
               <div className="royal-3d-input flex items-center px-5 py-4">
-                <Phone size={18} className="text-gold-dark mr-4" />
+                <Phone size={18} className="text-gold-dark mr-3 shrink-0" />
+                <span className="text-slate-900 font-bold mr-2 shrink-0">+91</span>
+                <div className="w-px h-5 bg-slate-300 mr-3 shrink-0" />
                 <input
                   type="tel"
                   required
-                  placeholder="Registered Line (+91...)"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="10-digit mobile number"
+                  value={phone.replace('+91', '')}
+                  maxLength={10}
+                  inputMode="numeric"
+                  pattern="[0-9]{10}"
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    setPhone('+91' + digits);
+                  }}
                   className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
                 />
               </div>
