@@ -7,7 +7,7 @@ import QRGenerator from '../../components/QRGenerator';
 
 const SnapDriverView = () => {
   const { session } = useContext(AppContext);
-  const { snapRides, rideRequests } = useContext(RideContext);
+  const { snapRides, rideRequests, refreshAll } = useContext(RideContext);
   const [passengers, setPassengers] = useState(0);
   
   const [startPoint, setStartPoint] = useState('');
@@ -31,21 +31,23 @@ const SnapDriverView = () => {
       departure_time: time,
       seats_available: seats
     }]);
+    await refreshAll();
   };
 
   const updateRequestStatus = async (reqId, newStatus) => {
     await supabase.from('ride_requests').update({ status: newStatus }).eq('id', reqId);
-    if (newStatus === 'accepted') {
-      setPassengers(passengers + 1);
-    }
+    if (newStatus === 'accepted') setPassengers(passengers + 1);
+    await refreshAll();
   };
 
   const abortRoute = async (rideId) => {
     await supabase.from('rides').delete().eq('id', rideId);
+    await refreshAll();
   };
 
   const kickPassenger = async (reqId) => {
     await supabase.from('ride_requests').delete().eq('id', reqId);
+    await refreshAll();
   };
 
   return (

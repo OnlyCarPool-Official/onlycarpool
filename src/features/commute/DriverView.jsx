@@ -6,7 +6,7 @@ import { CheckCircle2, Radio } from 'lucide-react';
 
 const DriverView = () => {
   const { session } = useContext(AppContext);
-  const { rideRequests, commuteRides } = useContext(RideContext);
+  const { rideRequests, commuteRides, refreshAll } = useContext(RideContext);
   const [tripStatus, setTripStatus] = useState('idle');
   const [startLoc, setStartLoc] = useState('Sector 17');
   const [endLoc, setEndLoc] = useState('PEC');
@@ -30,20 +30,24 @@ const DriverView = () => {
       departure_time: time,
       seats_available: seats
     }]);
+    await refreshAll();
     setTripStatus('global');
     setTimeout(() => setTripStatus('idle'), 2000);
   };
 
   const abortRoute = async (rideId) => {
     await supabase.from('rides').delete().eq('id', rideId);
+    await refreshAll();
   };
 
   const kickPassenger = async (reqId) => {
     await supabase.from('ride_requests').delete().eq('id', reqId);
+    await refreshAll();
   };
 
   const updateRequestStatus = async (reqId, newStatus) => {
     await supabase.from('ride_requests').update({ status: newStatus }).eq('id', reqId);
+    await refreshAll();
   };
 
   return (

@@ -6,7 +6,7 @@ import { ShieldCheck, Plus, Car } from 'lucide-react';
 
 const LedgerView = () => {
   const { session, profile, isDriver } = useContext(AppContext);
-  const { schoolLedgers } = useContext(RideContext);
+  const { schoolLedgers, refreshAll } = useContext(RideContext);
   const [dailyRate, setDailyRate] = useState(150);
   const [school, setSchool] = useState('DAV Sector 8');
   const [startLoc, setStartLoc] = useState('');
@@ -22,6 +22,7 @@ const LedgerView = () => {
       school_name: school,
       start_location: startLoc || 'Not Specified'
     }]);
+    await refreshAll();
   };
 
   const joinLedger = async (ledgerId) => {
@@ -29,24 +30,29 @@ const LedgerView = () => {
       ledger_id: ledgerId,
       passenger_id: session.user.id
     }]);
+    await refreshAll();
   };
 
   const addOverride = async (passengerRecord) => {
     await supabase.from('school_passengers').update({
       overrides: passengerRecord.overrides + 1
     }).eq('id', passengerRecord.id);
+    await refreshAll();
   };
 
   const abortLedger = async (ledgerId) => {
     await supabase.from('school_ledger').delete().eq('id', ledgerId);
+    await refreshAll();
   };
 
   const leaveLedger = async (passengerRecordId) => {
     await supabase.from('school_passengers').delete().eq('id', passengerRecordId);
+    await refreshAll();
   };
 
   const kickPassenger = async (passengerRecordId) => {
     await supabase.from('school_passengers').delete().eq('id', passengerRecordId);
+    await refreshAll();
   };
 
   return (

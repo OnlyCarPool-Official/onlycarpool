@@ -7,11 +7,12 @@ import { supabase } from '../../lib/supabase';
 
 const PassengerView = () => {
   const { session, profile } = useContext(AppContext);
-  const { commuteRides, rideRequests } = useContext(RideContext);
+  const { commuteRides, rideRequests, refreshAll } = useContext(RideContext);
   const [searching, setSearching] = useState(false);
 
   const toggleOffline = async () => {
     await supabase.from('profiles').update({ is_offline: !profile.is_offline }).eq('id', profile.id);
+    await refreshAll();
   };
 
   const handleBook = async (rideId) => {
@@ -19,10 +20,12 @@ const PassengerView = () => {
       ride_id: rideId,
       passenger_id: session.user.id
     }]);
+    await refreshAll();
   };
 
   const abortIntercept = async (rideId) => {
     await supabase.from('ride_requests').delete().match({ ride_id: rideId, passenger_id: session.user.id });
+    await refreshAll();
   };
 
   const myActiveIntercepts = [];
