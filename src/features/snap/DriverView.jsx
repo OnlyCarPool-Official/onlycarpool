@@ -2,8 +2,7 @@ import { useContext, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { RideContext } from '../../context/RideContext';
 import { supabase } from '../../lib/supabase';
-import { ShoppingBag, QrCode } from 'lucide-react';
-import QRGenerator from '../../components/QRGenerator';
+import { ShoppingBag } from 'lucide-react';
 
 const SnapDriverView = () => {
   const { session } = useContext(AppContext);
@@ -86,22 +85,8 @@ const SnapDriverView = () => {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-gold/10 pt-8">
-          <div className="flex items-center gap-3 mb-6">
-            <QrCode className="text-gold" size={18} />
-            <h3 className="text-[10px] font-bold gold-gradient-text uppercase tracking-[0.3em]">Elite Parking Authorization</h3>
-          </div>
-          <div className="flex items-center gap-6 royal-3d-panel p-6 bg-white/40">
-            <div className="p-3 bg-white rounded-2xl border-4 border-gold shadow-lg shadow-gold/20">
-              <QRGenerator value={`PARK-ELANTE-${session.user.id}`} size={100} />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-900 leading-relaxed italic">"Premium member detected. Free valet access granted at all major hubs."</p>
-              <p className="text-[8px] text-slate-400 uppercase font-bold tracking-widest mt-2">Valid at: Elante, Nexus, Piccadilly</p>
-            </div>
-          </div>
         </div>
-        </div>
+      </div>
 
       {myActiveRides.length > 0 && (
         <div className="space-y-6">
