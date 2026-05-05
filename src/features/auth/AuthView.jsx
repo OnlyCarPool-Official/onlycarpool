@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Mail, Lock, User, Phone } from 'lucide-react';
+import { Mail, Lock, User, Phone, CheckCircle2 } from 'lucide-react';
 import logo from '../../assets/OnlyCarPoolLogo.png';
 
 const AuthView = ({ initialMode = 'login', onBack }) => {
@@ -11,6 +11,7 @@ const AuthView = ({ initialMode = 'login', onBack }) => {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [confirmed, setConfirmed] = useState(false);
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -19,24 +20,18 @@ const AuthView = ({ initialMode = 'login', onBack }) => {
 
     try {
       if (isLogin) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
       } else {
-        const { data, error: signUpError } = await supabase.auth.signUp({
+        const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: { name, phone }
+          }
         });
         if (signUpError) throw signUpError;
-
-        if (data.user) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .insert([{ id: data.user.id, email, name, phone }]);
-          if (profileError) throw profileError;
-        }
+        setConfirmed(true);
       }
     } catch (err) {
       setError(err.message);
@@ -68,89 +63,115 @@ const AuthView = ({ initialMode = 'login', onBack }) => {
           <p className="text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-[0.3em] opacity-70">Royal Registry & Logistics</p>
         </div>
 
-        {error && (
-          <div className="bg-rose/20 text-rose p-3 rounded-xl mb-6 text-xs font-bold border border-rose/30 text-center uppercase tracking-widest">
-            {error}
+        {confirmed ? (
+          <div className="text-center space-y-6">
+            <div className="w-16 h-16 rounded-full bg-gold/10 border-2 border-gold/30 flex items-center justify-center mx-auto">
+              <CheckCircle2 size={32} className="text-gold" />
+            </div>
+            <div>
+              <h2 className="font-display font-bold text-slate-900 text-xl mb-2">Confirm Your Email</h2>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                A confirmation link has been sent to
+              </p>
+              <p className="text-sm font-bold text-gold-dark mt-1">{email}</p>
+              <p className="text-xs text-slate-400 mt-3 leading-relaxed">
+                Click the link in the email to activate your account, then come back here to log in.
+              </p>
+            </div>
+            <button
+              onClick={() => { setConfirmed(false); setIsLogin(true); }}
+              className="w-full btn-gold py-4 font-bold tracking-[0.3em] uppercase text-xs"
+            >
+              Go to Log In
+            </button>
           </div>
+        ) : (
+          <>
+            {error && (
+              <div className="bg-rose-50 text-rose-600 p-3 rounded-xl mb-6 text-xs font-bold border border-rose-200 text-center uppercase tracking-widest">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleAuth} className="space-y-5">
+              {!isLogin && (
+                <>
+                  <div className="royal-3d-input flex items-center px-5 py-4">
+                    <User size={18} className="text-gold-dark mr-4" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Full Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
+                    />
+                  </div>
+                  <div className="royal-3d-input flex items-center px-5 py-4">
+                    <Phone size={18} className="text-gold-dark mr-3 shrink-0" />
+                    <span className="text-slate-900 font-bold mr-2 shrink-0">+91</span>
+                    <div className="w-px h-5 bg-slate-300 mr-3 shrink-0" />
+                    <input
+                      type="tel"
+                      required
+                      placeholder="10-digit mobile number"
+                      value={phone.replace('+91', '')}
+                      maxLength={10}
+                      inputMode="numeric"
+                      pattern="[0-9]{10}"
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setPhone('+91' + digits);
+                      }}
+                      className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="royal-3d-input flex items-center px-5 py-4">
+                <Mail size={18} className="text-gold-dark mr-4" />
+                <input
+                  type="email"
+                  required
+                  placeholder="Email Address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
+                />
+              </div>
+
+              <div className="royal-3d-input flex items-center px-5 py-4">
+                <Lock size={18} className="text-gold-dark mr-4" />
+                <input
+                  type="password"
+                  required
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full btn-gold py-5 font-bold tracking-[0.3em] uppercase text-xs mt-4"
+              >
+                {loading ? 'Please wait...' : (isLogin ? 'Log In' : 'Create Account')}
+              </button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => { setIsLogin(!isLogin); setError(null); }}
+                className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] hover:text-gold-dark transition-colors"
+              >
+                {isLogin ? 'New here? Create an account' : 'Already have an account? Log In'}
+              </button>
+            </div>
+          </>
         )}
-
-        <form onSubmit={handleAuth} className="space-y-5">
-          {!isLogin && (
-            <>
-              <div className="royal-3d-input flex items-center px-5 py-4">
-                <User size={18} className="text-gold-dark mr-4" />
-                <input
-                  type="text"
-                  required
-                  placeholder="Official Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
-                />
-              </div>
-              <div className="royal-3d-input flex items-center px-5 py-4">
-                <Phone size={18} className="text-gold-dark mr-3 shrink-0" />
-                <span className="text-slate-900 font-bold mr-2 shrink-0">+91</span>
-                <div className="w-px h-5 bg-slate-300 mr-3 shrink-0" />
-                <input
-                  type="tel"
-                  required
-                  placeholder="10-digit mobile number"
-                  value={phone.replace('+91', '')}
-                  maxLength={10}
-                  inputMode="numeric"
-                  pattern="[0-9]{10}"
-                  onChange={(e) => {
-                    const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                    setPhone('+91' + digits);
-                  }}
-                  className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
-                />
-              </div>
-            </>
-          )}
-
-          <div className="royal-3d-input flex items-center px-5 py-4">
-            <Mail size={18} className="text-gold-dark mr-4" />
-            <input
-              type="email"
-              required
-              placeholder="Primary Access Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
-            />
-          </div>
-
-          <div className="royal-3d-input flex items-center px-5 py-4">
-            <Lock size={18} className="text-gold-dark mr-4" />
-            <input
-              type="password"
-              required
-              placeholder="Encryption Key"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-transparent text-slate-900 focus:outline-none font-bold placeholder:text-slate-300"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full btn-gold py-5 font-bold tracking-[0.3em] uppercase text-xs mt-4"
-          >
-            {loading ? 'Verifying...' : (isLogin ? 'Establish Link' : 'Initialize Portal')}
-          </button>
-        </form>
-
-        <div className="mt-8 text-center">
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] hover:text-gold-dark transition-colors"
-          >
-            {isLogin ? "Request Access Clearance" : "Existing Member Log-In"}
-          </button>
-        </div>
       </div>
     </div>
   );

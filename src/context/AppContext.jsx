@@ -40,16 +40,17 @@ export const AppProvider = ({ children }) => {
       setProfile(data);
       setIsDriver(data.is_driver);
     } else {
-      // Auto-heal missing profile from corrupted signups
       const { data: authData } = await supabase.auth.getUser();
+      const meta = authData?.user?.user_metadata || {};
       const email = authData?.user?.email || 'recovered@onlycarpool.com';
-      const name = email.split('@')[0];
+      const name = meta.name || email.split('@')[0];
+      const phone = meta.phone || 'Not Provided';
       
       const { data: newProfile } = await supabase.from('profiles').insert([{
         id: userId,
-        email: email,
-        name: name,
-        phone: 'Not Provided'
+        email,
+        name,
+        phone
       }]).select('*').single();
       
       if (newProfile) {
