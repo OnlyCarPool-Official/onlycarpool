@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">OnlyCarPool</string>
+    <string name="title_activity_main">OnlyCarPool</string>
+    <string name="package_name">com.onlycarpool.app</string>
+    <string name="custom_url_scheme">com.onlycarpool.app</string>
+</resources>

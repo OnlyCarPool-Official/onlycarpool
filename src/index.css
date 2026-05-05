@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --theme-base: #F8F7F4;
+  --theme-surface: #FFFFFF;
+  --theme-accent: #D4AF37; 
+  --theme-accent-glow: rgba(212, 175, 55, 0.3);
+  --theme-text: #2A2522;
+  --shadow-light: rgba(255, 255, 255, 0.9);
+  --shadow-warm: rgba(200, 190, 180, 0.4);
+}
+
+.mode-driver {
+  --theme-accent: theme('colors.emerald.500');
+  --theme-accent-glow: rgba(16, 185, 129, 0.5);
+}
+
+body {
+  background-color: var(--theme-base);
+  color: var(--theme-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  min-width: 320px;
+  /* Prevent overscroll bounce background color mismatch on iOS */
+  overscroll-behavior: none; 
+}
+
+#root {
+  width: 100%;
+}
+
+/* Headings use Space Grotesk */
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Utilities for High-Tech 3D Look */
+@layer utilities {
+  .text-accent {
+    color: var(--theme-accent);
+  }
+  .bg-accent {
+    background-color: var(--theme-accent);
+  }
+  .border-accent {
+    border-color: var(--theme-accent);
+  }
+  
+  /* Royal 3D Panel - Neumorphic Extrusion */
+  .royal-3d-panel {
+    @apply bg-ivory rounded-3xl border border-white/40;
+    box-shadow: 
+      -8px -8px 16px var(--shadow-light),
+      8px 8px 16px var(--shadow-warm);
+  }
+
+  /* Royal 3D Button - Pops out */
+  .royal-3d-button {
+    @apply bg-ivory rounded-xl font-bold transition-all duration-200 border border-white/60;
+    box-shadow: 
+      -4px -4px 8px var(--shadow-light),
+      4px 4px 8px var(--shadow-warm);
+  }
+  .royal-3d-button:active {
+    @apply translate-y-0.5;
+    box-shadow: 
+      inset -2px -2px 5px var(--shadow-light),
+      inset 2px 2px 5px var(--shadow-warm);
+  }
+
+  /* Gold Button */
+  .btn-gold {
+    @apply bg-gradient-to-br from-gold-light via-gold to-gold-dark text-white rounded-xl shadow-lg hover:brightness-110 active:scale-95 transition-all;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+  }
+
+  /* Carved Input - Physical indentation */
+  .royal-3d-input {
+    @apply bg-ivory rounded-xl border-none outline-none px-4 py-3 text-theme-text transition-all;
+    box-shadow: 
+      inset 2px 2px 5px var(--shadow-warm),
+      inset -2px -2px 5px var(--shadow-light);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 15px var(--theme-accent-glow);
+  }
+
+  .gold-gradient-text {
+    @apply bg-gradient-to-br from-gold-light via-gold to-gold-dark bg-clip-text text-transparent;
+  }
+}
+
+/* Hide scrollbars for clean app-like UI */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

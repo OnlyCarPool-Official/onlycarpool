@@ -1,0 +1,21 @@
+{
+  "name": "OnlyCarPool",
+  "short_name": "OnlyCarPool",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A1628",
+  "theme_color": "#0A1628",
+  "description": "Multi-mode carpooling app for commute, school, and mall trips.",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/vite.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
