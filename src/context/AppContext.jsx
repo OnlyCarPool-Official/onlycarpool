@@ -6,7 +6,16 @@ export const AppContext = createContext();
 export const AppProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [isDriver, setIsDriver] = useState(false);
+  const [isDriver, setIsDriverState] = useState(() => {
+    const saved = localStorage.getItem('ocp_isDriver');
+    return saved === null ? false : saved === 'true';
+  });
+
+  // Always write to localStorage when toggling so tab switches don't reset it
+  const setIsDriver = (val) => {
+    setIsDriverState(val);
+    localStorage.setItem('ocp_isDriver', String(val));
+  };
   const [currentCategory, setCurrentCategory] = useState('commute');
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +52,10 @@ export const AppProvider = ({ children }) => {
     
     if (data) {
       setProfile(data);
-      setIsDriver(data.is_driver);
+      // Only use DB value on first-ever login (no localStorage preference saved yet)
+      if (localStorage.getItem('ocp_isDriver') === null) {
+        setIsDriver(data.is_driver);
+      }
     } else {
       const { data: authData } = await supabase.auth.getUser();
       const meta = authData?.user?.user_metadata || {};
